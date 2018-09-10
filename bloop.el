@@ -26,6 +26,10 @@
   :type 'string
   :group 'bloop)
 
+(defcustom bloop-reporter "scalac"
+  "Either bloop or scalac. The main difference is that bloop shows errors in reverse order. Emacs generally assumes the first error in the output is the most relavent so the scalac reporter will most likely be preferred. This is used for test and compile."
+  :type 'string
+  :group 'bloop)
 
 (defun bloop-buffer-name (root command)
   (concat "*bloop-" command "*"))
@@ -112,7 +116,22 @@
   (let* ((root (bloop-find-root (buffer-file-name)))
          (project (bloop-current-project root))
          (project-name (car project)))
-    (bloop-exec nil root "compile" project-name)))
+    (bloop-exec nil root "compile" "--reporter" bloop-reporter project-name)))
+
+(defun bloop-test ()
+  (interactive)
+  (let* ((root (bloop-find-root (buffer-file-name)))
+         (project (bloop-current-project root))
+         (project-name (car project)))
+    (bloop-exec nil root "test" "--reporter" bloop-reporter project-name)))
+
+(defun bloop-test-only ()
+  (interactive)
+  (let* ((root (bloop-find-root (buffer-file-name)))
+         (project (bloop-current-project root))
+         (project-name (car project))
+         (target-test (concat "*" (replace-regexp-in-string ".scala" "" (car (last (split-string (buffer-file-name) "/")))))))
+    (bloop-exec nil root "test" "--reporter" bloop-reporter "--only" target-test project-name)))
 
 (defun bloop-show-current-project ()
   (interactive)
