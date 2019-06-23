@@ -14,6 +14,10 @@
 
 ;;; Code:
 
+(require 'json)
+(require 'subr-x)
+(require 'comint)
+
 ;;; Customization
 (defgroup bloop nil
   "Run Bloop from Emacs."
@@ -31,7 +35,7 @@
   :type 'string
   :group 'bloop)
 
-(defun bloop-buffer-name (root command)
+(defun bloop-buffer-name (_root command)
   (concat "*bloop-" command "*"))
 
 (defun bloop-directory (root)
@@ -57,7 +61,8 @@
     (cons name (mapcar 'file-name-as-directory dirs))))
 
 (defun bloop-longest-string (func strings)
-  (let ((sorted (sort strings (lambda (x y) (> (length (func x)) (length (func y)))))))
+  (let ((sorted (sort strings (lambda (x y) (> (length (funcall func x))
+                                               (length (funcall func y)))))))
     (car sorted)))
 
 (defun bloop-project-match-file (project file)
@@ -106,11 +111,12 @@
             ;; (compilation-shell-minor-mode)
             (comint-exec (current-buffer) buffer-name bloop-program-name nil (cons command args))
             (current-buffer)))
-      (let ((compilation-buffer-name-function (lambda (mode) buffer-name)))
+      (let ((compilation-buffer-name-function (lambda (_mode) buffer-name)))
         (cd root)
         (compile full-command)))))
 
 
+;;;###autoload
 (defun bloop-compile ()
   (interactive)
   (let* ((root (bloop-find-root (buffer-file-name)))
@@ -118,6 +124,7 @@
          (project-name (car project)))
     (bloop-exec nil root "compile" "--reporter" bloop-reporter project-name)))
 
+;;;###autoload
 (defun bloop-test ()
   (interactive)
   (let* ((root (bloop-find-root (buffer-file-name)))
@@ -125,6 +132,7 @@
          (project-name (car project)))
     (bloop-exec nil root "test" "--reporter" bloop-reporter project-name)))
 
+;;;###autoload
 (defun bloop-test-only ()
   (interactive)
   (let* ((root (bloop-find-root (buffer-file-name)))
@@ -133,10 +141,22 @@
          (target-test (concat "*" (replace-regexp-in-string ".scala" "" (car (last (split-string (buffer-file-name) "/")))))))
     (bloop-exec nil root "test" "--reporter" bloop-reporter "--only" target-test project-name)))
 
+;;;###autoload
 (defun bloop-show-current-project ()
   (interactive)
   (let* ((root (bloop-find-root (buffer-file-name))))
     (message (format "%S %S" root (bloop-current-project root)))))
 
-(global-set-key (kbd "C-c b c") 'bloop-compile)
-(global-set-key (kbd "C-c b q") 'bloop-show-current-project)
+;;;###autoload
+(define-minor-mode bloop-mode
+  "Minor mode to run Bloop from Emacs"
+  :lighter ""
+  :keymap (make-sparse-keymap)
+  :group 'bloop
+  nil)
+
+(define-key bloop-mode-map (kbd "C-c b c") 'bloop-compile)
+(define-key bloop-mode-map (kbd "C-c b q") 'bloop-show-current-project)
+
+(provide 'bloop)
+;;; bloop.el ends here
