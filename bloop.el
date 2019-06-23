@@ -140,3 +140,6 @@
 
 (global-set-key (kbd "C-c b c") 'bloop-compile)
 (global-set-key (kbd "C-c b q") 'bloop-show-current-project)
+
+(provide 'bloop)
+;;; bloop.el ends here
