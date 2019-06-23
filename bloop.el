@@ -147,8 +147,16 @@
   (let* ((root (bloop-find-root (buffer-file-name))))
     (message (format "%S %S" root (bloop-current-project root)))))
 
-(global-set-key (kbd "C-c b c") 'bloop-compile)
-(global-set-key (kbd "C-c b q") 'bloop-show-current-project)
+;;;###autoload
+(define-minor-mode bloop-mode
+  "Minor mode to run Bloop from Emacs"
+  :lighter ""
+  :keymap (make-sparse-keymap)
+  :group 'bloop
+  nil)
+
+(define-key bloop-mode-map (kbd "C-c b c") 'bloop-compile)
+(define-key bloop-mode-map (kbd "C-c b q") 'bloop-show-current-project)
 
 (provide 'bloop)
 ;;; bloop.el ends here
