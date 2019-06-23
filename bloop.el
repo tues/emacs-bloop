@@ -61,7 +61,8 @@
     (cons name (mapcar 'file-name-as-directory dirs))))
 
 (defun bloop-longest-string (func strings)
-  (let ((sorted (sort strings (lambda (x y) (> (length (func x)) (length (func y)))))))
+  (let ((sorted (sort strings (lambda (x y) (> (length (funcall func x))
+                                               (length (funcall func y)))))))
     (car sorted)))
 
 (defun bloop-project-match-file (project file)
