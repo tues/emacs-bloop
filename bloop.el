@@ -116,6 +116,7 @@
         (compile full-command)))))
 
 
+;;;###autoload
 (defun bloop-compile ()
   (interactive)
   (let* ((root (bloop-find-root (buffer-file-name)))
@@ -123,6 +124,7 @@
          (project-name (car project)))
     (bloop-exec nil root "compile" "--reporter" bloop-reporter project-name)))
 
+;;;###autoload
 (defun bloop-test ()
   (interactive)
   (let* ((root (bloop-find-root (buffer-file-name)))
@@ -130,6 +132,7 @@
          (project-name (car project)))
     (bloop-exec nil root "test" "--reporter" bloop-reporter project-name)))
 
+;;;###autoload
 (defun bloop-test-only ()
   (interactive)
   (let* ((root (bloop-find-root (buffer-file-name)))
@@ -138,6 +141,7 @@
          (target-test (concat "*" (replace-regexp-in-string ".scala" "" (car (last (split-string (buffer-file-name) "/")))))))
     (bloop-exec nil root "test" "--reporter" bloop-reporter "--only" target-test project-name)))
 
+;;;###autoload
 (defun bloop-show-current-project ()
   (interactive)
   (let* ((root (bloop-find-root (buffer-file-name))))
