@@ -35,7 +35,7 @@
   :type 'string
   :group 'bloop)
 
-(defun bloop-buffer-name (root command)
+(defun bloop-buffer-name (_root command)
   (concat "*bloop-" command "*"))
 
 (defun bloop-directory (root)
@@ -111,7 +111,7 @@
             ;; (compilation-shell-minor-mode)
             (comint-exec (current-buffer) buffer-name bloop-program-name nil (cons command args))
             (current-buffer)))
-      (let ((compilation-buffer-name-function (lambda (mode) buffer-name)))
+      (let ((compilation-buffer-name-function (lambda (_mode) buffer-name)))
         (cd root)
         (compile full-command)))))
 
