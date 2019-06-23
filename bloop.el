@@ -14,6 +14,10 @@
 
 ;;; Code:
 
+(require 'json)
+(require 'subr-x)
+(require 'comint)
+
 ;;; Customization
 (defgroup bloop nil
   "Run Bloop from Emacs."
